@@ -1,0 +1,31 @@
+name: Yocto Build Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  yocto-build:
+    runs-on: ubuntu-22.04  
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping libsdl1.2-dev xterm
+
+      - name: Run Bitbake Build
+        run: |
+          . sources/poky/oe-init-build-env
+          bitbake core-image-minimal  # Replace with your own image or target
+
+      - name: Check Build Artifacts
+        run: |
+          ls -lah tmp/deploy/images/
